@@ -1,5 +1,6 @@
 # clients/models.py
 from django.db import models
+from django.utils import timezone
 
 
 class Client(models.Model):
@@ -54,3 +55,75 @@ class Message(models.Model):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
+
+
+class Mailing(models.Model):
+    """Модель «Рассылка»."""
+
+    STATUS_CREATED = "created"
+    STATUS_RUNNING = "running"
+    STATUS_FINISHED = "finished"
+
+    STATUS_CHOICES = [
+        (STATUS_CREATED, "Создана"),
+        (STATUS_RUNNING, "Запущена"),
+        (STATUS_FINISHED, "Завершена"),
+    ]
+
+    start_time = models.DateTimeField(
+        verbose_name="Дата и время начала",
+    )
+    end_time = models.DateTimeField(
+        verbose_name="Дата и время окончания",
+    )
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=STATUS_CREATED,
+        verbose_name="Статус",
+    )
+    message = models.ForeignKey(
+        Message,
+        on_delete=models.CASCADE,
+        verbose_name="Сообщение",
+    )
+    recipients = models.ManyToManyField(
+        Client,
+        related_name="mailings",
+        verbose_name="Получатели",
+    )
+
+    def __str__(self) -> str:
+        return f"Рассылка #{self.pk} — {self.get_status_display()}"
+
+    def update_status(self, save: bool = True) -> None:
+        """ Пересчитать статус на основе текущего времени и интервала """
+        now = timezone.now()
+
+        if now < self.start_time:
+            new_status = self.STATUS_CREATED
+        elif self.start_time <= now <= self.end_time:
+            new_status = self.STATUS_RUNNING
+        else:
+            new_status = self.STATUS_FINISHED
+
+        if new_status != self.status:
+            self.status = new_status
+            if save:
+                self.save(update_fields=["status"])
+
+    def clean(self):
+        """ Переопределить метод clean() у модели """
+        from django.core.exceptions import ValidationError
+
+        now = timezone.now()
+
+        if self.start_time < now:
+            raise ValidationError("Время начала рассылки не может быть в прошлом.")
+
+        if self.start_time >= self.end_time:
+            raise ValidationError("Время начала должно быть раньше времени окончания.")
+
+    class Meta:
+        verbose_name = "Рассылка"
+        verbose_name_plural = "Рассылки"
