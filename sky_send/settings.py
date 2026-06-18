@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Зарегистрированные приложения (чтоб Django видел модели):
+    "clients",  # Приложение - управления клиентами.
 ]
 
 MIDDLEWARE = [
