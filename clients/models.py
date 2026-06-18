@@ -35,3 +35,22 @@ class Client(models.Model):
     class Meta:
         verbose_name = "Получатель рассылки"
         verbose_name_plural = "Получатели рассылки"
+
+
+class Message(models.Model):
+    """Модель «Сообщение» для рассылки."""
+
+    subject = models.CharField(
+        max_length=255,
+        verbose_name="Оглавление",
+    )
+    body = models.TextField(
+        verbose_name="Сообщение",
+    )
+
+    def __str__(self) -> str:
+        return self.subject
+
+    class Meta:
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
