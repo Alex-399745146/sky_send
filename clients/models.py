@@ -1,6 +1,8 @@
 # clients/models.py
 from django.db import models
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class Client(models.Model):
@@ -124,6 +126,104 @@ class Mailing(models.Model):
         if self.start_time >= self.end_time:
             raise ValidationError("Время начала должно быть раньше времени окончания.")
 
+    def can_be_sent_now(self) -> bool:
+        """Проверка: текущее время в допустимом интервале."""
+        now = timezone.now()
+        return self.start_time <= now <= self.end_time
+
+    def send_now(self) -> tuple[int, int]:
+        """
+        Запуск рассылки вручную.
+        Возвращает (успешно, с ошибкой).
+        """
+        now = timezone.now()
+
+        # 1. Проверка времени
+        if not self.can_be_sent_now():
+            raise ValueError("Отправка не разрешена: текущее время вне интервала рассылки.")
+
+        # 2. Обновим статус перед отправкой
+        self.update_status()
+
+        success_count = 0
+        failed_count = 0
+
+        # 3. Проходим по всем получателям
+        for client in self.recipients.all():
+            try:
+                send_mail(
+                    subject=self.message.subject,
+                    message=self.message.body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[client.email],
+                    fail_silently=False,
+                )
+                MailingLog.objects.create(
+                    mailing=self,
+                    recipient=client,
+                    status=MailingLog.STATUS_SUCCESS,
+                    server_response="OK",
+                )
+                success_count += 1
+            except Exception as exc:
+                MailingLog.objects.create(
+                    mailing=self,
+                    recipient=client,
+                    status=MailingLog.STATUS_FAILED,
+                    server_response=str(exc),
+                )
+                failed_count += 1
+
+        # После первой успешной отправки статус явно станет "Запущена"
+        if success_count > 0 and self.status != self.STATUS_RUNNING:
+            self.status = self.STATUS_RUNNING
+            self.save(update_fields=["status"])
+
+        return success_count, failed_count
+
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
+
+
+class MailingLog(models.Model):
+    STATUS_SUCCESS = "success"
+    STATUS_FAILED = "failed"
+
+    STATUS_CHOICES = [
+        (STATUS_SUCCESS, "Успешно"),
+        (STATUS_FAILED, "Не успешно"),
+    ]
+
+    mailing = models.ForeignKey(
+        Mailing,
+        on_delete=models.CASCADE,
+        related_name="logs",
+        verbose_name="Рассылка",
+    )
+    recipient = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        verbose_name="Получатель",
+    )
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        verbose_name="Статус",
+    )
+    server_response = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Ответ сервера / ошибка",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата и время попытки",
+    )
+
+    class Meta:
+        verbose_name = "Лог отправки"
+        verbose_name_plural = "Логи отправки"
+
+    def __str__(self) -> str:
+        return f"Рассылка #{self.mailing_id} → {self.recipient.email} ({self.get_status_display()})"

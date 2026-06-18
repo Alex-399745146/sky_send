@@ -97,3 +97,7 @@ STATICFILES_DIRS = [
 
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Консольный вывод писем.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@example.com"
