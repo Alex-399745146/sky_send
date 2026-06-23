@@ -61,7 +61,7 @@ class Message(models.Model):
 
 
 class Mailing(models.Model):
-    """Модель «Рассылка»."""
+    """Модель «Рассылки сообщений»."""
 
     STATUS_CREATED = "created"
     STATUS_RUNNING = "running"
