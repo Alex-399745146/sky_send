@@ -1,12 +1,21 @@
 from django.contrib import admin
 
-from .models import Client, Message, Mailing, MailingLog
+from .models import Client, Mailing, MailingLog, Message
 
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ("email", "last_name", "first_name", "comment",)
-    search_fields = ("email", "last_name", "first_name",)
+    list_display = (
+        "email",
+        "last_name",
+        "first_name",
+        "comment",
+    )
+    search_fields = (
+        "email",
+        "last_name",
+        "first_name",
+    )
     list_filter = ("last_name",)
 
 

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <h1 class="fw-light">Сервис управления рассылками</h1>
+            <p class="lead ss-card-text">
+                Управляйте клиентами, сообщениями и рассылками в одном месте.
+            </p>
+            <p>
+                <a href="{% url 'clients:home' %}" class="btn btn-ss-primary my-2">Обновить статистику</a>
+            </p>
+        </div>
+    </div>
+</section>
+
+<div class="album py-5 mt-3">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card ss-card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title ss-card-title">
+                            Всего рассылок
+                            <span class="badge badge-ss-purple ms-1">all</span>
+                        </h5>
+                        <p class="display-6">{{ total_mailings }}</p>
+                        <p class="ss-card-text">
+                            Общее количество всех созданных рассылок.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card ss-card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title ss-card-title">
+                            Активных рассылок
+                            <span class="badge badge-ss-orange ms-1">live</span>
+                        </h5>
+                        <p class="display-6">{{ active_mailings }}</p>
+                        <p class="ss-card-text">
+                            Количество активных рассылок со статусом «{{ active_status_label }}».
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card ss-card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title ss-card-title">
+                            Клиенты
+                            <span class="badge badge-ss-uniq ms-1">uniq</span>
+                        </h5>
+
+                        <p class="display-6">{{ unique_recipients }}</p>
+                        <p class="ss-card-text">
+                            Количество уникальных клиентов в системе оповещения.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

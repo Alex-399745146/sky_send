@@ -1,0 +1,148 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    background-color: #0f172a;
+    color: #e5e7eb;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 1.0;
+}
+
+p, li {
+    line-height: 1.5;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.ss-card {
+    background-color: #111827;
+    border: 1px solid #1f2933;
+    border-radius: 1rem;
+}
+
+.ss-card-title {
+    color: #e5e7eb;
+}
+
+.ss-card-text {
+    color: #9ca3af;
+}
+
+.btn-ss-primary {
+    background-color: #22d3ee;
+    border-color: #22d3ee;
+    color: #0f172a;
+}
+
+.btn-ss-primary:hover {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+    color: #020617;
+}
+
+.badge-ss-purple {
+    background-color: #a855f7;
+}
+
+.badge-ss-orange {
+    background-color: #f97316;
+}
+
+header.navbar,
+.bg-body-tertiary {
+    background-color: #020617 !important;
+}
+
+.navbar-brand i {
+    color: #22d3ee;
+    font-size: 1.1rem;
+}
+
+.navbar-nav .nav-link {
+    color: #9ca3af;              /* приглушённый серо-синий */
+    transition: color 0.2s ease; /* плавное изменение цвета */
+}
+
+/* При наведении и фокусе */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus {
+    color: #ffffff;
+}
+
+/* Активный пункт (текущая страница) */
+.navbar-nav .nav-link.active {
+    color: #ffffff;
+}
+
+/* Плашка бирюза */
+.badge-ss-uniq {
+    background-color: #22d3ee !important;  /* яркий бирюзовый */
+    color: #0f172a !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+/* Плашка оранжевая */
+.badge-ss-orange {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+/* Плашка фиолетовая */
+.badge-ss-purple {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+
+
+
+
+/* Прямоугольные «кнопки» в навбаре */
+.navbar .nav-link {
+    color: #e5e7eb;
+    padding: 0.4rem 0.9rem;
+    border-radius: 0.5rem;           /* можно 0.25rem для более квадратных */
+    margin-right: 0.25rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Ховер/фокус */
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    background-color: #111827;
+    color: #ffffff;
+}
+
+/* Активная страница */
+.navbar .nav-link.active,
+.navbar .nav-link[aria-current="page"] {
+    background-color: #22d3ee;
+    color: #0f172a;
+}

@@ -1,15 +1,12 @@
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-$3hah_(5e&h)pqw+mk0e-y!@q-c%_7z(t#9s9wrt^v9ji=wbs7"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = []
 
 
 INSTALLED_APPS = [
@@ -20,6 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # Зарегистрированные приложения (чтоб Django видел модели):
+    "django_bootstrap5",  # Подключение стилей по CDN.
     "clients",  # Приложение - управления клиентами.
 ]
 
@@ -38,7 +36,7 @@ ROOT_URLCONF = "sky_send.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],  # Django ищет шаблоны сначала в BASE_DIR/templates, потом в app/templates.
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -98,6 +96,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Консольный вывод писем.
+# Настройка почты (для разработки - вывод в консоль).
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "no-reply@example.com"

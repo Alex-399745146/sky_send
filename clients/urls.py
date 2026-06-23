@@ -1,11 +1,10 @@
 # clients/urls.py
 from django.urls import path
 
-from .views import index
-
+from .views import home
 
 app_name = "clients"
 
 urlpatterns = [
-    path("", index, name="index"),
+    path("", home, name="home"),
 ]

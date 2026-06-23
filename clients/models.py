@@ -1,8 +1,8 @@
 # clients/models.py
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import models
 from django.utils import timezone
-from django.core.mail import send_mail
-from django.conf import settings
 
 
 class Client(models.Model):
@@ -12,6 +12,7 @@ class Client(models.Model):
     - Имя и фамилия обязательные (для учебного проекта это даже плюс).
     - Комментарий — опциональный.
     """
+
     email = models.EmailField(
         unique=True,  # Поле email станет уникальным.
         max_length=254,  # Максимальная длина строки в БД.
@@ -99,7 +100,7 @@ class Mailing(models.Model):
         return f"Рассылка #{self.pk} — {self.get_status_display()}"
 
     def update_status(self, save: bool = True) -> None:
-        """ Пересчитать статус на основе текущего времени и интервала """
+        """Пересчитать статус на основе текущего времени и интервала"""
         now = timezone.now()
 
         if now < self.start_time:
@@ -115,7 +116,7 @@ class Mailing(models.Model):
                 self.save(update_fields=["status"])
 
     def clean(self):
-        """ Переопределить метод clean() у модели """
+        """Переопределить метод clean() у модели"""
         from django.core.exceptions import ValidationError
 
         now = timezone.now()
@@ -136,7 +137,6 @@ class Mailing(models.Model):
         Запуск рассылки вручную.
         Возвращает (успешно, с ошибкой).
         """
-        now = timezone.now()
 
         # 1. Проверка времени
         if not self.can_be_sent_now():
