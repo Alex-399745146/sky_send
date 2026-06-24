@@ -120,10 +120,6 @@ header.navbar,
     border-radius: 999px;
 }
 
-
-
-
-
 /* Прямоугольные «кнопки» в навбаре */
 .navbar .nav-link {
     color: #e5e7eb;
@@ -145,4 +141,12 @@ header.navbar,
 .navbar .nav-link[aria-current="page"] {
     background-color: #22d3ee;
     color: #0f172a;
+}
+
+.alert-ss-warning {
+    background-color: #facc15;
+    color: #1f2937;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
 }

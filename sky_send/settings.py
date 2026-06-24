@@ -19,7 +19,10 @@ INSTALLED_APPS = [
     # Зарегистрированные приложения (чтоб Django видел модели):
     "django_bootstrap5",  # Подключение стилей по CDN.
     "clients",  # Приложение - управления клиентами.
+    "users",  # Приложение - логирования и аутентификации.
 ]
+
+AUTH_USER_MODEL = "users.User"  # Django для авторизации используй эту модель.
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -96,6 +99,27 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Настройка почты (для разработки - вывод в консоль).
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@example.com"
+
+# MEDIA файлы (загрузка изображений)
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+# Для разработки - вывод в консоль:
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# DEFAULT_FROM_EMAIL = "no-reply@example.com"
+
+# Для реальной отправки:
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "bachevskiiaa@gmail.com" #os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = "ifjerzmwyaaugrbq" #os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+LOGIN_URL = "users:login"
+# Редирект для перенаправлений после входа и выхода.
+LOGIN_REDIRECT_URL = "clients:home"
+LOGOUT_REDIRECT_URL = "clients:home"
