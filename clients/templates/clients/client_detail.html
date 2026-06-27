@@ -21,7 +21,7 @@
   </li>
 </ul>
 
-<a href="{% url 'clients:client_edit' client.pk %}" class="btn btn-warning btn-sm">Редактировать</a>
-<a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-danger btn-sm">Удалить</a>
-<a href="{% url 'clients:client_list' %}" class="btn btn-secondary btn-sm">Назад к списку</a>
+<a href="{% url 'clients:client_edit' client.pk %}" class="btn btn-warning btn-sm my-1">Редактировать</a>
+<a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-danger btn-sm my-1">Удалить</a>
+<a href="{% url 'clients:client_list' %}" class="btn btn-secondary btn-sm">Назад</a>
 {% endblock %}

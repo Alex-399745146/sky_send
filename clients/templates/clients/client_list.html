@@ -42,9 +42,9 @@
                 <td>{{ client.last_name }} {{ client.first_name }}</td>
                 <td>{{ client.email }}</td>
                 <td class="text-end">
-                    <a href="{% url 'clients:client_detail' client.pk %}" class="btn btn-outline-primary btn-sm">Просмотр</a>
-                    <a href="{% url 'clients:client_edit' client.pk %}" class="btn btn-outline-warning btn-sm">Редактировать</a>
-                    <a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-outline-danger btn-sm">Удалить</a>
+                    <a href="{% url 'clients:client_detail' client.pk %}" class="btn btn-outline-primary btn-sm my-1">Просмотр</a>
+                    <a href="{% url 'clients:client_edit' client.pk %}" class="btn btn-outline-warning btn-sm my-1">Редактировать</a>
+                    <a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-outline-danger btn-sm my-1">Удалить</a>
                 </td>
             </tr>
         {% empty %}

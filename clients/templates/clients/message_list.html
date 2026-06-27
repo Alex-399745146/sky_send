@@ -1,0 +1,55 @@
+<!--clients/message_list.html-->
+
+{% extends "base.html" %}
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Тексты сообщений</h1>
+
+    <div>
+        <form method="get" class="d-flex">
+            <input
+                type="text"
+                name="q"
+                value="{{ q }}"
+                class="form-control form-control-sm me-2"
+                placeholder="оглавление содержание"
+            >
+            <button class="btn btn-ss-primary btn-sm" type="submit">Искать</button>
+        </form>
+    </div>
+
+    <a href="{% url 'clients:message_create' %}" class="btn btn-success btn-sm">Добавить</a>
+</div>
+
+<table class="table table-dark table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Оглавление</th>
+            <th>Краткое содержание</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for message in messages %}
+            <tr>
+                <td>{{ message.subject }}</td>
+                <td>
+                    {{ message.body|truncatechars:80 }}
+                </td>
+                <td class="text-end">
+                    <a href="{% url 'clients:message_detail' message.pk %}" class="btn btn-outline-primary btn-sm my-1">Просмотр</a>
+                    <a href="{% url 'clients:message_edit' message.pk %}" class="btn btn-outline-warning btn-sm my-1">Редактировать</a>
+                    <a href="{% url 'clients:message_delete' message.pk %}" class="btn btn-outline-danger btn-sm my-1">Удалить</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">Сообщений пока нет</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

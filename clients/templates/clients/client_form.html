@@ -20,9 +20,15 @@
           {{ field.errors }}
         </div>
       {% endfor %}
-      <button type="submit" class="btn btn-ss-primary w-100">
-        {% if view.object %}Сохранить{% else %}Создать{% endif %}
-      </button>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-ss-primary flex-grow-1">
+          {% if view.object %}Сохранить{% else %}Создать{% endif %}
+        </button>
+        <a href="{% url 'clients:client_list' %}" class="btn btn-outline-secondary">
+          Назад
+        </a>
+      </div>
     </form>
   </div>
 </div>
