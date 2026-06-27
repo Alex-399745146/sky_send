@@ -41,7 +41,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link {% if url_name in 'mailing_list mailing_detail mailing_create mailing_edit' %}active{% endif %}"
-                       href="#">
+                        href="{% url 'clients:mailing_list' %}">
                         Рассылки
                     </a>
                 </li>

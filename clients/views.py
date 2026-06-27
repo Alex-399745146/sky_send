@@ -1,12 +1,21 @@
 # clients/views.py
-from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.views import View
+from django.db import models, transaction
+from django.db.models import Count, Q
+from django.db.models import Count, Q, FloatField, ExpressionWrapper
+from .models import Client, Mailing, Message, MailingLog
+from django import forms
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
-from django.db import models
-from .models import Client, Mailing, Message
+from django.utils import timezone
+
 
 
 def home(request):
@@ -24,6 +33,14 @@ def home(request):
         "active_status_label": active_status_label,
     }
     return render(request, "clients/home.html", context)
+
+
+class ManagerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and (
+                user.is_superuser or user.groups.filter(name="manager").exists()
+        )
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
@@ -64,7 +81,7 @@ class ClientDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "client"
 
 
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+class ClientUpdateView(ManagerRequiredMixin, LoginRequiredMixin, UpdateView):
     """ Редактирование карточек клиентов """
     model = Client
     fields = ["email", "first_name", "last_name", "comment"]
@@ -72,14 +89,14 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("clients:client_list")
 
 
-class ClientDeleteView(LoginRequiredMixin, DeleteView):
+class ClientDeleteView(ManagerRequiredMixin, LoginRequiredMixin, DeleteView):
     """ Удаление карточки клиента """
     model = Client
     template_name = "clients/client_confirm_delete.html"
     success_url = reverse_lazy("clients:client_list")
 
 
-class MessageListView(ListView):
+class MessageListView(LoginRequiredMixin, ListView):
     """ Чтение всех сообщений """
     model = Message
     template_name = "clients/message_list.html"
@@ -101,14 +118,14 @@ class MessageListView(ListView):
         return context
 
 
-class MessageDetailView(DetailView):
+class MessageDetailView(LoginRequiredMixin, DetailView):
     """ Чтение конкретного сообщения """
     model = Message
     template_name = "clients/message_detail.html"
     context_object_name = "message"
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     """ Создание сообщения(как объект класса) """
     model = Message
     fields = ["subject", "body"]
@@ -116,7 +133,7 @@ class MessageCreateView(CreateView):
     success_url = reverse_lazy("clients:message_list")
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(ManagerRequiredMixin, LoginRequiredMixin, UpdateView):
     """ Редактирование сообщения """
     model = Message
     fields = ["subject", "body"]
@@ -124,8 +141,122 @@ class MessageUpdateView(UpdateView):
     success_url = reverse_lazy("clients:message_list")
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(ManagerRequiredMixin, LoginRequiredMixin, DeleteView):
     """ Удаление сообщения """
     model = Message
     template_name = "clients/message_confirm_delete.html"
     success_url = reverse_lazy("clients:message_list")
+
+
+class MailingForm(LoginRequiredMixin, forms.ModelForm):
+    """ Форма для создания и редактирования рассылки с выбором получателей """
+
+    class Meta:
+        model = Mailing
+        fields = ["start_time", "end_time", "message", "recipients"]
+        widgets = {
+            "start_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            ),
+            "end_time": forms.DateTimeInput(
+                attrs={"type": "datetime-local", "class": "form-control"}
+            ),
+            "message": forms.Select(attrs={"class": "form-select"}),
+            "recipients": forms.CheckboxSelectMultiple(attrs={"class": "ss-recipient-checkbox"}),
+        }
+
+
+class MailingListView(LoginRequiredMixin, ListView):
+    """ Представление для списка всех рассылок пользователя """
+
+    model = Mailing
+    template_name = "clients/mailing_list.html"
+    context_object_name = "mailings"
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .select_related("message")
+            .prefetch_related("recipients")
+            .annotate(
+                total_recipients=Count("recipients", distinct=True),
+                success_logs=Count(
+                    "logs",
+                    filter=Q(logs__status=MailingLog.STATUS_SUCCESS),
+                    distinct=True,
+                ),
+            )
+        )
+
+        # динамический пересчёт статуса + процент отправки
+        for mailing in qs:
+            mailing.update_status(save=True)
+
+            if mailing.total_recipients:
+                mailing.send_percent = int(
+                    mailing.success_logs * 100 / mailing.total_recipients
+                )
+            else:
+                mailing.send_percent = 0
+
+        return qs
+
+
+class MailingDetailView(LoginRequiredMixin, DetailView):
+    """ Представление для детального просмотра одной рассылки """
+
+    model = Mailing
+    template_name = "clients/mailing_detail.html"
+    context_object_name = "mailing"
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        obj.update_status()  # пересчёт и сохранение статуса
+        return obj
+
+
+class MailingCreateView(ManagerRequiredMixin, LoginRequiredMixin, CreateView):
+    """ Представление для создания новой рассылки """
+
+    model = Mailing
+    form_class = MailingForm
+    template_name = "clients/mailing_form.html"
+    success_url = reverse_lazy("clients:mailing_list")
+
+
+class MailingUpdateView(ManagerRequiredMixin, LoginRequiredMixin, UpdateView):
+    """ Представление для редактирования существующей рассылки """
+
+    model = Mailing
+    form_class = MailingForm
+    template_name = "clients/mailing_form.html"
+    success_url = reverse_lazy("clients:mailing_list")
+
+
+class MailingDeleteView(ManagerRequiredMixin, LoginRequiredMixin, DeleteView):
+    """ Представление для удаления рассылки """
+
+    model = Mailing
+    template_name = "clients/mailing_confirm_delete.html"
+    success_url = reverse_lazy("clients:mailing_list")
+
+
+class MailingSendNowView(ManagerRequiredMixin, LoginRequiredMixin, View):
+    """ Ручной запуск рассылки - сейчас """
+
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+        try:
+            success_count, failed_count = mailing.send_now()
+            messages.success(
+                request,
+                f"Рассылка запущена: успешно {success_count}, с ошибкой {failed_count}."
+            )
+        except ValueError as exc:
+            # ошибка из can_be_sent_now (вне интервала)
+            messages.error(request, str(exc))
+        except Exception as exc:
+            messages.error(request, f"Ошибка при запуске рассылки: {exc}")
+
+        return redirect("clients:mailing_detail", pk=pk)

@@ -1,4 +1,5 @@
 # clients/models.py
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import models
@@ -135,8 +136,9 @@ class Mailing(models.Model):
 
     def send_now(self) -> tuple[int, int]:
         """
-        Запуск рассылки вручную.
-        Возвращает (успешно, с ошибкой).
+        Запустить данную рассылку вручную.
+        Для каждого получателя отправляется письмо и создаётся запись MailingLog.
+        Возвращает (success_count, failed_count).
         """
 
         # 1. Проверка времени
@@ -148,6 +150,7 @@ class Mailing(models.Model):
 
         success_count = 0
         failed_count = 0
+        logs_to_create: list[MailingLog] = []
 
         # 3. Проходим по всем получателям
         for client in self.recipients.all():
@@ -159,23 +162,29 @@ class Mailing(models.Model):
                     recipient_list=[client.email],
                     fail_silently=False,
                 )
-                MailingLog.objects.create(
-                    mailing=self,
-                    recipient=client,
-                    status=MailingLog.STATUS_SUCCESS,
-                    server_response="OK",
-                )
                 success_count += 1
-            except Exception as exc:
-                MailingLog.objects.create(
-                    mailing=self,
-                    recipient=client,
-                    status=MailingLog.STATUS_FAILED,
-                    server_response=str(exc),
+                logs_to_create.append(
+                    MailingLog(
+                        mailing=self,
+                        recipient=client,
+                        status=MailingLog.STATUS_SUCCESS,
+                        server_response="OK",
+                    )
                 )
+            except Exception as exc:
                 failed_count += 1
+                logs_to_create.append(
+                    MailingLog(
+                        mailing=self,
+                        recipient=client,
+                        status=MailingLog.STATUS_FAILED,
+                        server_response=str(exc),
+                    )
+                )
 
-        # После первой успешной отправки статус явно станет "Запущена"
+        if logs_to_create:
+            MailingLog.objects.bulk_create(logs_to_create)
+
         if success_count > 0 and self.status != self.STATUS_RUNNING:
             self.status = self.STATUS_RUNNING
             self.save(update_fields=["status"])

@@ -4,32 +4,32 @@
 {% block title %}{% if view.object %}Редактировать получателя{% else %}Новый получатель{% endif %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-5">
-    <h1 class="mb-4 text-center">
-      {% if view.object %}Редактировать получателя{% else %}Новый получатель{% endif %}
-    </h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <h1 class="mb-4 text-center">
+                {% if view.object %}Редактировать получателя{% else %}Новый получатель{% endif %}
+            </h1>
 
-    <form method="post" class="border rounded p-4 shadow-sm bg-body-tertiary">
-      {% csrf_token %}
-      {{ form.non_field_errors }}
-      {% for field in form %}
-        <div class="mb-3">
-          <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-          {{ field }}
-          {{ field.errors }}
+            <form method="post" class="border rounded p-4 shadow-sm bg-body-tertiary">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-ss-primary flex-grow-1">
+                        {% if view.object %}Сохранить{% else %}Создать{% endif %}
+                    </button>
+                    <a href="{% url 'clients:client_list' %}" class="btn btn-outline-secondary">
+                        Назад
+                    </a>
+                </div>
+            </form>
         </div>
-      {% endfor %}
-
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-ss-primary flex-grow-1">
-          {% if view.object %}Сохранить{% else %}Создать{% endif %}
-        </button>
-        <a href="{% url 'clients:client_list' %}" class="btn btn-outline-secondary">
-          Назад
-        </a>
-      </div>
-    </form>
-  </div>
-</div>
+    </div>
 {% endblock %}

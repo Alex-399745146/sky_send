@@ -1,0 +1,21 @@
+<!--clients/mailing_confirm_delete.html-->
+
+{% extends "base.html" %}
+{% block title %}Удалить рассылку{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 text-center">
+            <h1 class="mb-3">Удалить рассылку</h1>
+            <p class="ss-card-text mb-4">
+                Вы действительно хотите удалить рассылку
+                <strong>#{{ object.pk }} ({{ object.get_status_display }})</strong>?
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger me-2">Удалить</button>
+                <a href="{% url 'clients:mailing_list' %}" class="btn btn-outline-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -4,18 +4,18 @@
 {% block title %}Удалить получателя{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-5 text-center">
-    <h1 class="mb-3">Удалить получателя</h1>
-    <p class="ss-card-text mb-4">
-      Вы действительно хотите удалить получателя
-      <strong>{{ object.last_name }} {{ object.first_name }} ({{ object.email }})</strong>?
-    </p>
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit" class="btn btn-danger me-2">Удалить</button>
-      <a href="{% url 'clients:client_list' %}" class="btn btn-outline-secondary">Отмена</a>
-    </form>
-  </div>
-</div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 text-center">
+            <h1 class="mb-3">Удалить получателя</h1>
+            <p class="ss-card-text mb-4">
+                Вы действительно хотите удалить получателя
+                <strong>{{ object.last_name }} {{ object.first_name }} ({{ object.email }})</strong>?
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger me-2">Удалить</button>
+                <a href="{% url 'clients:client_list' %}" class="btn btn-outline-secondary">Отмена</a>
+            </form>
+        </div>
+    </div>
 {% endblock %}
