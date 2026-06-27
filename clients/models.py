@@ -31,6 +31,7 @@ class Client(models.Model):
         blank=True,
         null=True,
         verbose_name="Комментарий",
+        help_text="Поле не обязательное для заполнения"
     )
 
     def __str__(self) -> str:
