@@ -1,0 +1,88 @@
+<!-- includes/up_bar_menu.html -->
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container">
+
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'clients:home' %}">
+            <i class="bi bi-envelope-fill"></i>
+            <span><strong>SKY SEND</strong></span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarMain" aria-controls="navbarMain"
+                aria-expanded="false" aria-label="Переключить навигацию">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            {% with url_name=request.resolver_match.url_name %}
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link {% if url_name == 'home' %}active{% endif %}"
+                       href="{% url 'clients:home' %}">
+                        Главная
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if url_name == 'client_list' %}active{% endif %}"
+                       href="{% url 'clients:client_list' %}">
+                        Клиенты
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if url_name == 'message_list' %}active{% endif %}"
+                       href="{% url 'clients:message_list' %}">
+                        Сообщения
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if url_name in 'mailing_list mailing_detail mailing_create mailing_edit' %}active{% endif %}"
+                        href="{% url 'clients:mailing_list' %}">
+                        Рассылки
+                    </a>
+                </li>
+
+                <!--Скрытый пункт меню для супера и менеджера.-->
+                {% if is_manager %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if url_name == 'user_list' %}active{% endif %}"
+                           href="{% url 'users:user_list' %}">
+                            Пользователи
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+            {% endwith %}
+        </div>
+
+        <div>
+            <ul class="navbar-nav me-auto">
+                {% if user.is_authenticated %}
+                    <span class="me-3 text-muted">
+                        Пользователь <strong>{{ user.email }}</strong>
+                    </span>
+                    <li class="nav-item">
+                        <form action="{% url 'users:logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                    onclick="return confirm('Точно выйти из аккаунта?');">
+                                Выход
+                            </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'users:login' %}" class="btn btn-ss-primary btn-sm">Вход</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</nav>
+

@@ -1,12 +1,18 @@
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения из файла .env
+load_dotenv(override=True, encoding="utf-8")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-$3hah_(5e&h)pqw+mk0e-y!@q-c%_7z(t#9s9wrt^v9ji=wbs7"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS: list[str] = []
+ALLOWED_HOSTS: list[str] = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
 INSTALLED_APPS = [
@@ -19,7 +25,10 @@ INSTALLED_APPS = [
     # Зарегистрированные приложения (чтоб Django видел модели):
     "django_bootstrap5",  # Подключение стилей по CDN.
     "clients",  # Приложение - управления клиентами.
+    "users",  # Приложение - логирования и аутентификации.
 ]
+
+AUTH_USER_MODEL = "users.User"  # Django для авторизации используй эту модель.
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -44,6 +53,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "users.context_processors.role_flags",
             ],
         },
     },
@@ -52,10 +62,12 @@ TEMPLATES = [
 WSGI_APPLICATION = "sky_send.wsgi.application"
 
 
+db_name = os.getenv("DB_NAME") or "db.sqlite3"
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / db_name,
     }
 }
 
@@ -96,6 +108,36 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Настройка почты (для разработки - вывод в консоль).
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@example.com"
+
+# MEDIA файлы (загрузка изображений)
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+# Для реальной отправки:
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+LOGIN_URL = "users:login"
+# Редирект для перенаправлений после входа и выхода.
+LOGIN_REDIRECT_URL = "clients:home"
+LOGOUT_REDIRECT_URL = "clients:home"
+
+
+# Настройки кэша для redis.
+CACHE_ENABLED = True
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "sky-send-cache",
+    }
+}
