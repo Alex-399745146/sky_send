@@ -46,6 +46,16 @@
                     </a>
                 </li>
 
+                <!--Скрытый пункт меню для супера и менеджера.-->
+                {% if is_manager %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if url_name == 'user_list' %}active{% endif %}"
+                           href="{% url 'users:user_list' %}">
+                            Пользователи
+                        </a>
+                    </li>
+                {% endif %}
+
             </ul>
             {% endwith %}
         </div>

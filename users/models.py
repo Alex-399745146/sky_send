@@ -97,4 +97,3 @@ class User(AbstractUser):
         понятным образом, а не "User object (1)".
         """
         return self.email
-

@@ -10,7 +10,7 @@ class UserAdmin(BaseUserAdmin):
     """Админка для нашей кастомной модели пользователя."""
 
     # Какие поля показывать в списке пользователей.
-    list_display = ("email", "is_active", "is_staff",  "country", "phone")
+    list_display = ("email", "is_active", "is_staff", "country", "phone")
     list_filter = ("is_staff", "is_superuser", "is_active", "country")
 
     # Группировка полей на странице редактирования пользователя.

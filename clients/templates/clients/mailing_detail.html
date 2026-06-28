@@ -58,5 +58,14 @@
         <a href="{% url 'clients:mailing_list' %}" class="btn btn-secondary btn-sm my-1">
             Назад
         </a>
+        <!--Скрытая кнопка(Отключить рассылку) менеджера-->
+        {% if can_manage_mailings %}
+            <form method="post" action="{% url 'clients:mailing_disable' mailing.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm my-1">
+                    Отключить рассылку
+                </button>
+            </form>
+        {% endif %}
     </div>
 {% endblock %}

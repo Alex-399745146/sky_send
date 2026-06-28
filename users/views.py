@@ -3,11 +3,12 @@
 import secrets
 
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView, UpdateView
 
 from .forms import UserRegistrationForm  # Сделаем сразу ниже.
 from .models import User
@@ -54,3 +55,30 @@ def email_verification(request, token):
     user.is_active = True
     user.save()
     return redirect(reverse("users:login"))
+
+
+class ManagerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        user = self.request.user
+        return user.is_authenticated and (user.is_superuser or user.groups.filter(name="manager").exists())
+
+
+class UserListView(ManagerRequiredMixin, LoginRequiredMixin, ListView):
+    model = User
+    template_name = "users/user_list.html"
+    context_object_name = "users"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["is_manager"] = user.is_authenticated and (
+            user.is_superuser or user.groups.filter(name="manager").exists()
+        )
+        return context
+
+
+class UserBlockView(ManagerRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = User
+    fields = ["is_active"]  # или кастомное поле «is_blocked»
+    template_name = "users/user_block_form.html"
+    success_url = reverse_lazy("users:user_list")

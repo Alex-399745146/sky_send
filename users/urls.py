@@ -1,10 +1,9 @@
 # users/urls.py
+
 from django.contrib.auth import views as auth_views
-from django.urls import path
-from django.urls import reverse_lazy
+from django.urls import path, reverse_lazy
 
-from .views import UserLoginView, UserLogoutView, UserRegisterView, email_verification
-
+from .views import UserBlockView, UserListView, UserLoginView, UserLogoutView, UserRegisterView, email_verification
 
 app_name = "users"
 
@@ -14,7 +13,11 @@ urlpatterns = [
     path("logout/", UserLogoutView.as_view(), name="logout"),
     path("register/", UserRegisterView.as_view(), name="register"),
     path("email-confirm/<str:token>/", email_verification, name="email_confirm"),
-    # Восстановление пароля
+    # Cписок пользователей (только менеджеру/суперу).
+    path("list/", UserListView.as_view(), name="user_list"),
+    # Блокировка/разблокировка пользователя.
+    path("block/<int:pk>/", UserBlockView.as_view(), name="user_block"),
+    # Восстановление пароля.
     path(
         "password-reset/",
         auth_views.PasswordResetView.as_view(

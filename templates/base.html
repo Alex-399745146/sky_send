@@ -19,16 +19,6 @@
 
         <!--Генезис сайта-->
         <main class="flex-grow-1">
-            <!-- Сообщения Django -->
-            {% if messages %}
-                <div class="container my-2">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} py-2 mb-2">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
 
             <!-- Инфоблок -->
             <section class="py-2 text-center container">

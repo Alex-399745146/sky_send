@@ -20,19 +20,26 @@ class Client(models.Model):
         verbose_name="Email",  # Человеко‑читаемое имя поля (для админки и форм).
         help_text="Введите Ваш email",
     )
+
     first_name = models.CharField(
         max_length=50,
         verbose_name="Имя",
     )
+
     last_name = models.CharField(
         max_length=70,
         verbose_name="Фамилия",
     )
+
     comment = models.TextField(
-        blank=True,
-        null=True,
-        verbose_name="Комментарий",
-        help_text="Поле не обязательное для заполнения"
+        blank=True, null=True, verbose_name="Комментарий", help_text="Поле не обязательное для заполнения"
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,  # Ссылка на кастомного пользователя без жёткой привязки к классу.
+        on_delete=models.CASCADE,
+        related_name="clients",
+        verbose_name="Владелец",
     )
 
     def __str__(self) -> str:
@@ -50,8 +57,16 @@ class Message(models.Model):
         max_length=255,
         verbose_name="Оглавление",
     )
+
     body = models.TextField(
         verbose_name="Сообщение",
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="messages",
+        verbose_name="Владелец",
     )
 
     def __str__(self) -> str:
@@ -78,24 +93,35 @@ class Mailing(models.Model):
     start_time = models.DateTimeField(
         verbose_name="Дата и время начала",
     )
+
     end_time = models.DateTimeField(
         verbose_name="Дата и время окончания",
     )
+
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
         default=STATUS_CREATED,
         verbose_name="Статус",
     )
+
     message = models.ForeignKey(
         Message,
         on_delete=models.CASCADE,
         verbose_name="Сообщение",
     )
+
     recipients = models.ManyToManyField(
         Client,
         related_name="mailings",
         verbose_name="Получатели",
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="mailings",
+        verbose_name="Владелец",
     )
 
     def __str__(self) -> str:
