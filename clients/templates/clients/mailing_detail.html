@@ -1,0 +1,71 @@
+<!--clients/mailing_detail.html-->
+
+{% extends "base.html" %}
+{% block title %}Рассылка #{{ mailing.pk }}{% endblock %}
+
+{% block content %}
+    <h1>Рассылка #{{ mailing.pk }}</h1>
+
+    <ul class="list-group mb-3">
+        <li class="list-group-item bg-dark text-light">
+            <strong>Статус:</strong> {{ mailing.get_status_display }}
+        </li>
+
+        <li class="list-group-item bg-dark text-light">
+            <strong>Интервал:</strong>
+            {{ mailing.start_time|date:"d.m.Y H:i" }} —
+            {{ mailing.end_time|date:"d.m.Y H:i" }}
+        </li>
+
+        <li class="list-group-item bg-dark text-light">
+            <strong>Сообщение:</strong><br>
+            {{ mailing.message.subject }}
+        </li>
+
+        <li class="list-group-item bg-dark text-light">
+            <strong>Получатели ({{ mailing.recipients.count }}):</strong><br>
+            {% for client in mailing.recipients.all %}
+                {{ client.email }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                — получателей нет
+            {% endfor %}
+        </li>
+    </ul>
+
+    <div class="text-end">
+        {% if mailing.can_be_sent_now %}
+            <form method="post"
+                  action="{% url 'clients:mailing_send_now' mailing.pk %}"
+                  class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-ss-primary btn-sm my-1">
+                    Запустить сейчас
+                </button>
+            </form>
+        {% else %}
+            <span class="text-muted me-2">
+                Запуск недоступен: вне интервала рассылки
+                ({{ mailing.start_time|date:"d.m.Y H:i" }} — {{ mailing.end_time|date:"d.m.Y H:i" }})
+            </span>
+        {% endif %}
+
+        <a href="{% url 'clients:mailing_edit' mailing.pk %}" class="btn btn-warning btn-sm my-1">
+            Редактировать
+        </a>
+        <a href="{% url 'clients:mailing_delete' mailing.pk %}" class="btn btn-danger btn-sm my-1">
+            Удалить
+        </a>
+        <a href="{% url 'clients:mailing_list' %}" class="btn btn-secondary btn-sm my-1">
+            Назад
+        </a>
+        <!--Скрытая кнопка(Отключить рассылку) менеджера-->
+        {% if can_manage_mailings %}
+            <form method="post" action="{% url 'clients:mailing_disable' mailing.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm my-1">
+                    Отключить рассылку
+                </button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

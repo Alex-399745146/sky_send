@@ -1,0 +1,90 @@
+<!--clients/mailing_form.html-->
+
+{% extends "base.html" %}
+{% block title %}{% if view.object %}Редактировать рассылку{% else %}Новая рассылка{% endif %}{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <h1 class="mb-4 text-center">
+                {% if view.object %}Редактировать рассылку{% else %}Новая рассылка{% endif %}
+            </h1>
+
+            <form method="post" class="border rounded p-4 shadow-sm bg-body-tertiary">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+
+                        {% if field.name == "recipients" %}
+                            <!-- Выбрать всех / снять всех -->
+                            <div class="d-flex align-items-center mb-2">
+                                <input type="checkbox" id="toggle-all-recipients" class="form-check-input me-2">
+                                <label for="toggle-all-recipients" class="form-check-label">
+                                    Выбрать всех / снять со всех
+                                </label>
+                            </div>
+
+                            <!-- Поиск по списку получателей -->
+                            <div class="mb-2">
+                                <input
+                                    type="text"
+                                    id="recipients-search"
+                                    class="form-control form-control-sm"
+                                    placeholder="Поиск по email или имени получателя"
+                                >
+                            </div>
+
+                            <!-- Список чекбоксов получателей -->
+                            <div class="border rounded p-2" style="max-height: 260px; overflow-y: auto;">
+                                {{ field }}
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-ss-primary flex-grow-1">
+                        {% if view.object %}Сохранить{% else %}Создать{% endif %}
+                    </button>
+                    <a href="{% url 'clients:mailing_list' %}" class="btn btn-outline-secondary">
+                        Назад
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const master = document.getElementById('toggle-all-recipients');
+            if (master) {
+                master.addEventListener('change', function () {
+                    const checked = master.checked;
+                    document.querySelectorAll('.ss-recipient-checkbox').forEach(function (cb) {
+                        cb.checked = checked;
+                    });
+                });
+            }
+
+            const searchInput = document.getElementById('recipients-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    const query = searchInput.value.toLowerCase().trim();
+
+                    document.querySelectorAll('.ss-recipient-checkbox').forEach(function (cb) {
+                        const label = cb.parentElement.textContent.toLowerCase();
+                        const match = !query || label.indexOf(query) !== -1;
+                        cb.parentElement.style.display = match ? '' : 'none';
+                    });
+                });
+            }
+        });
+    </script>
+{% endblock %}

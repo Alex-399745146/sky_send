@@ -1,23 +1,16 @@
+<!--clients/home.html-->
+
 {% extends "base.html" %}
 
+<!-- Карточки статистики -->
 {% block content %}
-<section class="py-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-8 col-md-10 mx-auto">
-            <h1 class="fw-light">Сервис управления рассылками</h1>
-            <p class="lead ss-card-text">
-                Управляйте клиентами, сообщениями и рассылками в одном месте.
-            </p>
-            <p>
-                <a href="{% url 'clients:home' %}" class="btn btn-ss-primary my-2">Обновить статистику</a>
-            </p>
-        </div>
-    </div>
-</section>
-
-<div class="album py-5 mt-3">
+<div class="album py-1 mt-1">
     <div class="container">
+
+        <!-- Блок трёх инфо-карточек -->
         <div class="row g-4">
+
+            <!-- Карточка_1 -->
             <div class="col-md-4">
                 <div class="card ss-card shadow-sm h-100">
                     <div class="card-body">
@@ -33,6 +26,7 @@
                 </div>
             </div>
 
+            <!-- Карточка_2 -->
             <div class="col-md-4">
                 <div class="card ss-card shadow-sm h-100">
                     <div class="card-body">
@@ -48,6 +42,7 @@
                 </div>
             </div>
 
+            <!-- Карточка_3 -->
             <div class="col-md-4">
                 <div class="card ss-card shadow-sm h-100">
                     <div class="card-body">
@@ -63,7 +58,9 @@
                     </div>
                 </div>
             </div>
+
         </div>
+
     </div>
 </div>
 {% endblock %}

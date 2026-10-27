@@ -1,0 +1,70 @@
+<!--clients/mailing_list.html-->
+
+{% extends "base.html" %}
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Рассылки</h1>
+        <a href="{% url 'clients:mailing_create' %}" class="btn btn-success btn-sm">Добавить</a>
+    </div>
+
+    <table class="table table-dark table-striped align-middle">
+        <thead>
+            <tr>
+                <th>ID#</th>
+                <th>Статус</th>
+                <th>Интервал</th>
+                <th>Сообщение</th>
+                <th>Получателей</th>
+                <th>Процент отправки</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mailing in mailings %}
+                <tr>
+                    <td>{{ mailing.pk }}</td>
+                    <td>{{ mailing.get_status_display }}</td>
+                    <td>
+                        {{ mailing.start_time|date:"d.m.Y H:i" }}
+                        —
+                        {{ mailing.end_time|date:"d.m.Y H:i" }}
+                    </td>
+                    <td class="text-break">
+                        {{ mailing.message.subject }}
+                    </td>
+                    <td>{{ mailing.total_recipients }}</td>
+                    <td>{{ mailing.send_percent }}%</td>
+                    <td class="text-end">
+                        {% if mailing.can_be_sent_now %}
+                            <form method="post"
+                                  action="{% url 'clients:mailing_send_now' mailing.pk %}"
+                                  class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-ss-primary btn-sm my-1">
+                                    Запустить сейчас
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted me-2 d-inline-block my-1">
+                                Запуск недоступен
+                            </span>
+                        {% endif %}
+
+                        <a href="{% url 'clients:mailing_detail' mailing.pk %}"
+                           class="btn btn-outline-primary btn-sm my-1">Просмотр</a>
+                        <a href="{% url 'clients:mailing_edit' mailing.pk %}"
+                           class="btn btn-outline-warning btn-sm my-1">Редактировать</a>
+                        <a href="{% url 'clients:mailing_delete' mailing.pk %}"
+                           class="btn btn-outline-danger btn-sm my-1">Удалить</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">Рассылок пока нет</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

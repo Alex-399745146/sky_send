@@ -1,81 +1,41 @@
-<!--base.html-->
 {% load static %}
 <!doctype html>
 <html lang="ru" data-bs-theme="dark">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Sky Send — сервис рассылок{% endblock %}</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Sky Send — сервис рассылок{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/sky_send.css' %}">
+    </head>
+    <body>
 
-    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-    >
+        <!--Бар меню -->
+        <header class="border-bottom">
+            {% include "includes/up_bar_menu.html" %}
+        </header>
 
-    <!-- Bootstrap CSS по CDN -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-        crossorigin="anonymous"
-    >
+        <!--Генезис сайта-->
+        <main class="flex-grow-1">
 
-    <!-- Наши кастомные стили -->
-    <link rel="stylesheet" href="{% static 'css/sky_send.css' %}">
+            <!-- Инфоблок -->
+            <section class="py-2 text-center container">
+                {% include "includes/info_block.html" %}
+            </section>
 
-    {% block extra_head %}{% endblock %}
-</head>
-<body>
-
-<header class="border-bottom">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'clients:home' %}">
-                <i class="bi bi-envelope-fill"></i>
-                <span>Sky Send</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarMain" aria-controls="navbarMain"
-                    aria-expanded="false" aria-label="Переключить навигацию">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Клиенты</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Сообщения</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Рассылки</a>
-                    </li>
-
-                </ul>
+            <!-- Карточки статистики / основной контент -->
+            <div class="container my-4">
+                {% block content %}{% endblock %}
             </div>
+        </main>
 
-        </div>
-    </nav>
-</header>
+        <!--Подвал сайта-->
+        <footer class="bd-footer py-3 bg-body-tertiary mt-5 border-top">
+            {% include "includes/footer.html" %}
+        </footer>
 
-<main>
-    {% block content %}{% endblock %}
-</main>
-
-<footer class="bd-footer py-4 bg-body-tertiary mt-5 border-top">
-    <div class="container">
-        <p class="mb-0 text-muted">Sky Send &copy; 2026</p>
-    </div>
-</footer>
-
-<!-- Bootstrap JS по CDN -->
-{% include "includes/js/bootstrap_js.html" %}
-
-{% block extra_js %}{% endblock %}
-</body>
+        {% include "includes/js/bootstrap_js.html" %}
+    </body>
 </html>

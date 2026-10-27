@@ -1,0 +1,30 @@
+<!--clients/message_detail.html-->
+
+{% extends "base.html" %}
+{% block title %}{{ message.subject }}{% endblock %}
+
+{% block content %}
+<h1 class="text-break">{{ message.subject }}</h1>
+
+<ul class="list-group mb-3">
+<!--    <li class="list-group-item bg-dark text-light">-->
+<!--        <strong>Оглавление:</strong> {{ message.subject }}-->
+<!--    </li>-->
+
+    <li class="list-group-item bg-dark text-light">
+        <strong>Текст сообщения:</strong>
+    </li>
+
+    <li class="list-group-item bg-dark text-light">
+        {{ message.body|linebreaks }}
+    </li>
+</ul>
+
+<!--Кнопки-->
+<div class="text-end">
+    <a href="{% url 'clients:message_edit' message.pk %}" class="btn btn-warning btn-sm">Редактировать</a>
+    <a href="{% url 'clients:message_delete' message.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+    <a href="{% url 'clients:message_list' %}" class="btn btn-secondary btn-sm">Назад</a>
+</div>
+
+{% endblock %}

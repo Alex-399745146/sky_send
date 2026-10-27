@@ -1,0 +1,27 @@
+<!--clients/client_detail.html-->
+
+{% extends "base.html" %}
+{% block title %}{{ client.last_name }} {{ client.first_name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ client.last_name }} {{ client.first_name }}</h1>
+
+    <ul class="list-group mb-3">
+        <li class="list-group-item bg-dark text-light">
+            <strong>Email:</strong> {{ client.email }}
+        </li>
+        <li class="list-group-item bg-dark text-light">
+            <strong>Имя:</strong> {{ client.first_name }}
+        </li>
+        <li class="list-group-item bg-dark text-light">
+            <strong>Фамилия:</strong> {{ client.last_name }}
+        </li>
+        <li class="list-group-item bg-dark text-light">
+            <strong>Комментарий:</strong> {{ client.comment|default:"—" }}
+        </li>
+    </ul>
+
+    <a href="{% url 'clients:client_edit' client.pk %}" class="btn btn-warning btn-sm my-1">Редактировать</a>
+    <a href="{% url 'clients:client_delete' client.pk %}" class="btn btn-danger btn-sm my-1">Удалить</a>
+    <a href="{% url 'clients:client_list' %}" class="btn btn-secondary btn-sm">Назад</a>
+{% endblock %}
